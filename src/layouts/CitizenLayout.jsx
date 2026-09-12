@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Plus, List, Navigation2, Bell,
-  User, Settings, LogOut, Search,
+  User, Settings, LogOut, Search, Menu
 } from 'lucide-react';
 import CitizenDashboard from '../components/citizen/CitizenDashboard';
 import { getAuth } from '../App';
@@ -20,6 +20,7 @@ const NAV = [
 export default function CitizenLayout({ onLogout }) {
   const [activeNav, setActiveNav] = useState('home');
   const [showSearch, setShowSearch] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const auth = getAuth();
 
@@ -27,8 +28,14 @@ export default function CitizenLayout({ onLogout }) {
 
   return (
     <div className="app-layout">
+      {/* Mobile Overlay */}
+      <div 
+        className={`mobile-overlay ${isSidebarOpen ? 'sidebar-open' : ''}`} 
+        onClick={() => setIsSidebarOpen(false)} 
+      />
+      
       {/* ─── Sidebar ─── */}
-      <aside className="sidebar">
+      <aside className={`sidebar ${isSidebarOpen ? 'sidebar-open' : ''}`}>
         <div className="sidebar-logo">
           <div className="logo-mark">
             <div className="logo-icon">🛣️</div>
@@ -45,7 +52,7 @@ export default function CitizenLayout({ onLogout }) {
             <button
               key={item.id}
               className={`nav-item${activeNav === item.id ? ' active' : ''}`}
-              onClick={() => setActiveNav(item.id)}
+              onClick={() => { setActiveNav(item.id); setIsSidebarOpen(false); }}
             >
               {item.icon}
               <span>{item.label}</span>
@@ -84,9 +91,14 @@ export default function CitizenLayout({ onLogout }) {
       <main className="main-content">
         {/* Topbar */}
         <header className="topbar">
-          <div className="topbar-left">
-            <h2>Hello {auth?.name?.split(' ')[0] || 'Varun'} 👋</h2>
-            <p>Here's what's happening with your road complaints</p>
+          <div className="topbar-left" style={{ display: 'flex', alignItems: 'center' }}>
+            <button className="menu-toggle" onClick={() => setIsSidebarOpen(true)}>
+              <Menu size={20} />
+            </button>
+            <div>
+              <h2>Hello {auth?.name?.split(' ')[0] || 'Varun'} 👋</h2>
+              <p className="hide-on-mobile">Here's what's happening with your road complaints</p>
+            </div>
           </div>
           <div className="topbar-right">
             <div className="icon-btn" title="Search" onClick={() => setShowSearch(s => !s)}>
@@ -106,7 +118,7 @@ export default function CitizenLayout({ onLogout }) {
                 background: '#3b82f6', display: 'flex', alignItems: 'center',
                 justifyContent: 'center', fontSize: 11, fontWeight: 700, color: 'white',
               }}>{auth?.initials || 'VB'}</div>
-              <div>
+              <div className="hide-on-mobile">
                 <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>{auth?.name}</div>
                 <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>Citizen</div>
               </div>

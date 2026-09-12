@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, ClipboardList, Map, Users, Zap,
-  AlertTriangle, BarChart3, Settings, LogOut, Search, Bell,
+  AlertTriangle, BarChart3, Settings, LogOut, Search, Bell, Menu
 } from 'lucide-react';
 import AuthorityDashboard from '../components/authority/AuthorityDashboard';
 import { getAuth } from '../App';
@@ -21,6 +21,7 @@ const NAV = [
 
 export default function AuthorityLayout({ onLogout }) {
   const [activeNav, setActiveNav] = useState('dashboard');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const auth = getAuth();
 
@@ -28,8 +29,14 @@ export default function AuthorityLayout({ onLogout }) {
 
   return (
     <div className="app-layout">
+      {/* Mobile Overlay */}
+      <div 
+        className={`mobile-overlay ${isSidebarOpen ? 'sidebar-open' : ''}`} 
+        onClick={() => setIsSidebarOpen(false)} 
+      />
+
       {/* ─── Sidebar ─── */}
-      <aside className="sidebar">
+      <aside className={`sidebar ${isSidebarOpen ? 'sidebar-open' : ''}`}>
         <div className="sidebar-logo">
           <div className="logo-mark">
             <div className="logo-icon">🛣️</div>
@@ -46,7 +53,7 @@ export default function AuthorityLayout({ onLogout }) {
             <button
               key={item.id}
               className={`nav-item${activeNav === item.id ? ' active' : ''}`}
-              onClick={() => setActiveNav(item.id)}
+              onClick={() => { setActiveNav(item.id); setIsSidebarOpen(false); }}
             >
               {item.icon}
               <span>{item.label}</span>
@@ -85,9 +92,14 @@ export default function AuthorityLayout({ onLogout }) {
       <main className="main-content">
         {/* Topbar */}
         <header className="topbar">
-          <div className="topbar-left">
-            <h2>Municipal Road Department</h2>
-            <p>{auth?.org || 'Jaipur Municipal Corporation'}</p>
+          <div className="topbar-left" style={{ display: 'flex', alignItems: 'center' }}>
+            <button className="menu-toggle" onClick={() => setIsSidebarOpen(true)}>
+              <Menu size={20} />
+            </button>
+            <div>
+              <h2>Municipal Road Department</h2>
+              <p className="hide-on-mobile">{auth?.org || 'Jaipur Municipal Corporation'}</p>
+            </div>
           </div>
           <div className="topbar-right">
             <div className="icon-btn" title="Search">
@@ -107,7 +119,7 @@ export default function AuthorityLayout({ onLogout }) {
                 background: '#8b5cf6', display: 'flex', alignItems: 'center',
                 justifyContent: 'center', fontSize: 11, fontWeight: 700, color: 'white',
               }}>{auth?.initials || 'AS'}</div>
-              <div>
+              <div className="hide-on-mobile">
                 <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>{auth?.name}</div>
                 <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>Authority Officer</div>
               </div>

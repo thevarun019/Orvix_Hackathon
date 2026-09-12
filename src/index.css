@@ -1244,6 +1244,57 @@ body {
 }
 
 /* =====================================================
+   Mobile Responsive Utilities
+   ===================================================== */
+
+.mobile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(2px);
+  z-index: 90;
+  animation: fadeIn 0.2s;
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 8px;
+  margin-right: 12px;
+  margin-left: -12px;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dashboard-switcher-wrapper {
+  overflow-x: auto;
+  margin-bottom: 24px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dashboard-switcher-wrapper::-webkit-scrollbar { display: none; }
+.dashboard-switcher-wrapper { scrollbar-width: none; }
+
+.dashboard-switcher {
+  display: inline-flex;
+  gap: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+/* =====================================================
    Responsive
    ===================================================== */
 
@@ -1255,9 +1306,35 @@ body {
 
 @media (max-width: 768px) {
   :root { --sidebar-width: 0px; }
-  .sidebar { transform: translateX(-240px); }
+  
+  .sidebar { 
+    transform: translateX(-260px); 
+    width: 260px;
+  }
+  
+  .sidebar.sidebar-open {
+    transform: translateX(0);
+  }
+  
+  .mobile-overlay.sidebar-open {
+    display: block;
+  }
+  
+  .menu-toggle { display: block; }
+  .hide-on-mobile { display: none !important; }
+  
   .main-content { margin-left: 0; }
+  
+  .topbar { padding: 0 16px; }
+  .page-content { padding: 16px; }
+  
   .grid-2 { grid-template-columns: 1fr; }
   .grid-3 { grid-template-columns: 1fr; }
-  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+@media (max-width: 480px) {
+  .kpi-grid { grid-template-columns: 1fr !important; }
+  .filters-row { flex-direction: column; align-items: stretch; }
+  .filters-row .form-select, .filters-row .form-input { width: 100% !important; }
 }

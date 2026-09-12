@@ -222,18 +222,20 @@ export default function HomePage({ onNavChange }) {
               <div className="card-title">Recent Complaints</div>
               <button className="view-all-btn" onClick={()=>onNavChange('complaints')}>View All</button>
             </div>
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>ID</th><th>Problem</th><th>Ward</th><th>Status</th><th>SLA</th>
-                </tr>
-              </thead>
-              <tbody>
-                {complaints.slice(0,5).map(c=>(
-                  <ComplaintRow key={c.id} c={c} onClick={setSelected} />
-                ))}
-              </tbody>
-            </table>
+            <div className="table-responsive">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th><th>Problem</th><th>Ward</th><th>Status</th><th>SLA</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {complaints.slice(0,5).map(c=>(
+                    <ComplaintRow key={c.id} c={c} onClick={setSelected} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Map */}

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Globe, LayoutDashboard, Map, TrendingUp,
-  AlertTriangle, FileText, Settings, LogOut, Search, Bell, Calendar, Filter,
+  AlertTriangle, FileText, Settings, LogOut, Search, Bell, Calendar, Filter, Menu
 } from 'lucide-react';
 import StateDashboard from '../components/state/StateDashboard';
 import { getAuth } from '../App';
@@ -19,6 +19,7 @@ const NAV = [
 
 export default function StateLayout({ onLogout }) {
   const [activeNav, setActiveNav] = useState('overview');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const auth = getAuth();
 
@@ -26,8 +27,14 @@ export default function StateLayout({ onLogout }) {
 
   return (
     <div className="app-layout">
+      {/* Mobile Overlay */}
+      <div 
+        className={`mobile-overlay ${isSidebarOpen ? 'sidebar-open' : ''}`} 
+        onClick={() => setIsSidebarOpen(false)} 
+      />
+
       {/* ─── Sidebar ─── */}
-      <aside className="sidebar">
+      <aside className={`sidebar ${isSidebarOpen ? 'sidebar-open' : ''}`}>
         <div className="sidebar-logo">
           <div className="logo-mark">
             <div className="logo-icon">🛣️</div>
@@ -44,7 +51,7 @@ export default function StateLayout({ onLogout }) {
             <button
               key={item.id}
               className={`nav-item${activeNav === item.id ? ' active' : ''}`}
-              onClick={() => setActiveNav(item.id)}
+              onClick={() => { setActiveNav(item.id); setIsSidebarOpen(false); }}
             >
               {item.icon}
               <span>{item.label}</span>
@@ -83,9 +90,14 @@ export default function StateLayout({ onLogout }) {
       <main className="main-content">
         {/* Topbar */}
         <header className="topbar">
-          <div className="topbar-left">
-            <h2>State / Public Dashboard</h2>
-            <p>Overall performance, transparency and insights across all authorities</p>
+          <div className="topbar-left" style={{ display: 'flex', alignItems: 'center' }}>
+            <button className="menu-toggle" onClick={() => setIsSidebarOpen(true)}>
+              <Menu size={20} />
+            </button>
+            <div>
+              <h2>State / Public Dashboard</h2>
+              <p className="hide-on-mobile">Overall performance, transparency and insights across all authorities</p>
+            </div>
           </div>
           <div className="topbar-right">
             <div className="icon-btn" title="Search">
@@ -94,7 +106,7 @@ export default function StateLayout({ onLogout }) {
             <div className="icon-btn" title="Filter">
               <Filter size={15} />
             </div>
-            <select style={{
+            <select className="hide-on-mobile" style={{
               padding: '6px 10px', borderRadius: 8,
               background: 'var(--bg-card)', border: '1px solid var(--border)',
               color: 'var(--text-secondary)', fontSize: 12, fontFamily: 'inherit', cursor: 'pointer',
@@ -103,7 +115,7 @@ export default function StateLayout({ onLogout }) {
               <option>Last 90 Days</option>
               <option>This Year</option>
             </select>
-            <select style={{
+            <select className="hide-on-mobile" style={{
               padding: '6px 10px', borderRadius: 8,
               background: 'var(--bg-card)', border: '1px solid var(--border)',
               color: 'var(--text-secondary)', fontSize: 12, fontFamily: 'inherit', cursor: 'pointer',
@@ -122,7 +134,7 @@ export default function StateLayout({ onLogout }) {
                 background: '#10b981', display: 'flex', alignItems: 'center',
                 justifyContent: 'center', fontSize: 11, fontWeight: 700, color: 'white',
               }}>{auth?.initials || 'SG'}</div>
-              <div>
+              <div className="hide-on-mobile">
                 <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>{auth?.name}</div>
                 <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>State Government • View Only</div>
               </div>

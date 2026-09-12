@@ -69,65 +69,67 @@ export default function ComplaintQueuePage() {
       </div>
 
       <div className="card" style={{ padding: 0, overflow: 'hidden', flex: 1 }}>
-        <table className="data-table" style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr>
-              <th style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>ID & Details</th>
-              <th style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>Severity (AI)</th>
-              <th style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>Status</th>
-              <th style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>Assigned To</th>
-              <th style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>Time Elapsed</th>
-              <th style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', textAlign: 'right' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map(c => (
-              <tr key={c.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                <td style={{ padding: '16px 20px' }}>
-                  <div style={{ fontWeight: 700, color: 'var(--accent-blue)', marginBottom: 4 }}>{c.id}</div>
-                  <div style={{ fontSize: 13 }}>{typeIcon(c.type)} {c.type}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{c.location}</div>
-                </td>
-                <td style={{ padding: '16px 20px' }}>
-                  {getSeverityBadge(c.severity)}
-                  {c.aiConfidence && <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}>{c.aiConfidence}% match</div>}
-                </td>
-                <td style={{ padding: '16px 20px' }}>
-                  {getStatusBadge(c.status)}
-                </td>
-                <td style={{ padding: '16px 20px' }}>
-                  {c.assignedTo ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bg-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>
-                        {c.assignedTo.split(' ').map(n=>n[0]).join('')}
-                      </div>
-                      <span style={{ fontSize: 13 }}>{c.assignedTo}</span>
-                    </div>
-                  ) : (
-                    <span style={{ fontSize: 13, color: 'var(--text-muted)', fontStyle: 'italic' }}>Unassigned</span>
-                  )}
-                </td>
-                <td style={{ padding: '16px 20px' }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: c.slaLeft === 0 ? 'var(--accent-red)' : 'var(--text-primary)' }}>
-                    {c.slaLeft === 0 ? 'Breached' : c.slaLeft != null ? `${c.sla - c.slaLeft}h ago` : '-'}
-                  </div>
-                  {c.slaLeft != null && <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>SLA: {c.sla}h</div>}
-                </td>
-                <td style={{ padding: '16px 20px', textAlign: 'right' }}>
-                  <button className="btn btn-secondary btn-sm" style={{ padding: '6px 12px' }}>Review <ArrowRight size={14} style={{ marginLeft: 4 }} /></button>
-                </td>
-              </tr>
-            ))}
-            {filtered.length === 0 && (
+        <div className="table-responsive">
+          <table className="data-table" style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+            <thead>
               <tr>
-                <td colSpan="6" style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>
-                  <div style={{ fontSize: 32, marginBottom: 12 }}>🔍</div>
-                  No complaints found matching the filters.
-                </td>
+                <th style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>ID & Details</th>
+                <th style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>Severity (AI)</th>
+                <th style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>Status</th>
+                <th style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>Assigned To</th>
+                <th style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>Time Elapsed</th>
+                <th style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', textAlign: 'right' }}>Actions</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.map(c => (
+                <tr key={c.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                  <td style={{ padding: '16px 20px' }}>
+                    <div style={{ fontWeight: 700, color: 'var(--accent-blue)', marginBottom: 4 }}>{c.id}</div>
+                    <div style={{ fontSize: 13 }}>{typeIcon(c.type)} {c.type}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{c.location}</div>
+                  </td>
+                  <td style={{ padding: '16px 20px' }}>
+                    {getSeverityBadge(c.severity)}
+                    {c.aiConfidence && <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}>{c.aiConfidence}% match</div>}
+                  </td>
+                  <td style={{ padding: '16px 20px' }}>
+                    {getStatusBadge(c.status)}
+                  </td>
+                  <td style={{ padding: '16px 20px' }}>
+                    {c.assignedTo ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bg-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>
+                          {c.assignedTo.split(' ').map(n=>n[0]).join('')}
+                        </div>
+                        <span style={{ fontSize: 13 }}>{c.assignedTo}</span>
+                      </div>
+                    ) : (
+                      <span style={{ fontSize: 13, color: 'var(--text-muted)', fontStyle: 'italic' }}>Unassigned</span>
+                    )}
+                  </td>
+                  <td style={{ padding: '16px 20px' }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: c.slaLeft === 0 ? 'var(--accent-red)' : 'var(--text-primary)' }}>
+                      {c.slaLeft === 0 ? 'Breached' : c.slaLeft != null ? `${c.sla - c.slaLeft}h ago` : '-'}
+                    </div>
+                    {c.slaLeft != null && <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>SLA: {c.sla}h</div>}
+                  </td>
+                  <td style={{ padding: '16px 20px', textAlign: 'right' }}>
+                    <button className="btn btn-secondary btn-sm" style={{ padding: '6px 12px' }}>Review <ArrowRight size={14} style={{ marginLeft: 4 }} /></button>
+                  </td>
+                </tr>
+              ))}
+              {filtered.length === 0 && (
+                <tr>
+                  <td colSpan="6" style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>
+                    <div style={{ fontSize: 32, marginBottom: 12 }}>🔍</div>
+                    No complaints found matching the filters.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
