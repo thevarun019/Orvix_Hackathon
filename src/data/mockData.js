@@ -22,7 +22,7 @@ export const COMPLAINTS = [
     ward: 'Ward 12', authority: 'Road Maintenance Department', aiConfidence: 94,
     description: 'Large pothole in the middle of MG Road causing vehicle damage.',
     submittedAt: '10:32 AM, 12 Sep', assignedTo: 'Team B',
-    beforeImg: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=400&q=70',
+    beforeImg: 'https://placehold.co/400x200?text=Pothole+Photo',
     afterImg: null,
     timeline: [
       { label: 'Complaint submitted',    time: '10:32 AM',  status: 'done' },

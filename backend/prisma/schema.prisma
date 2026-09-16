@@ -1,0 +1,114 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  phone        String?
+  passwordHash String
+  role         String   @default("CITIZEN") // CITIZEN, OFFICER, ADMIN, STATE_ADMIN
+  createdAt    DateTime @default(now())
+
+  complaints   Complaint[]
+  notifications Notification[]
+}
+
+model Complaint {
+  id               String   @id @default(uuid())
+  ticketNumber     String   @unique
+  citizenId        String
+  citizen          User     @relation(fields: [citizenId], references: [id])
+  title            String?
+  description      String?
+  latitude         Float
+  longitude        Float
+  address          String?
+  damageType       String?
+  severity         Float?
+  status           String   @default("SUBMITTED")
+  authorityId      String?
+  authority        Authority? @relation(fields: [authorityId], references: [id])
+  assignedOfficerId String?
+  slaHours         Int?
+  slaDeadline      DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  escalations      Escalation[]
+  statusHistory    ComplaintStatusHistory[]
+  notifications    Notification[]
+}
+
+model Authority {
+  id                String   @id @default(uuid())
+  name              String
+  type              String?
+  level             Int?
+  parentAuthorityId String?
+  parentAuthority   Authority? @relation("AuthorityHierarchy", fields: [parentAuthorityId], references: [id])
+  childAuthorities  Authority[] @relation("AuthorityHierarchy")
+  district          String?
+  state             String?
+  latitude          Float?
+  longitude         Float?
+  createdAt         DateTime @default(now())
+
+  complaints        Complaint[]
+  escalationsFrom   Escalation[] @relation("EscalationFrom")
+  escalationsTo     Escalation[] @relation("EscalationTo")
+}
+
+model ComplaintStatusHistory {
+  id           String   @id @default(uuid())
+  complaintId  String
+  complaint    Complaint @relation(fields: [complaintId], references: [id])
+  oldStatus    String?
+  newStatus    String
+  changedById  String?
+  remarks      String?
+  createdAt    DateTime @default(now())
+}
+
+model Escalation {
+  id              String   @id @default(uuid())
+  complaintId     String
+  complaint       Complaint @relation(fields: [complaintId], references: [id])
+  fromAuthorityId String?
+  fromAuthority   Authority? @relation("EscalationFrom", fields: [fromAuthorityId], references: [id])
+  toAuthorityId   String?
+  toAuthority     Authority? @relation("EscalationTo", fields: [toAuthorityId], references: [id])
+  reason          String?
+  escalatedAt     DateTime @default(now())
+  acknowledgedAt  DateTime?
+  resolvedAt      DateTime?
+}
+
+model SLARule {
+  id                       String   @id @default(uuid())
+  authorityType            String?
+  damageType               String?
+  severityMin              Float?
+  severityMax              Float?
+  resolutionHours          Int
+  escalationAuthorityType  String?
+}
+
+model Notification {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  complaintId  String?
+  complaint    Complaint? @relation(fields: [complaintId], references: [id])
+  title        String?
+  message      String?
+  type         String?
+  read         Boolean  @default(false)
+  createdAt    DateTime @default(now())
+}

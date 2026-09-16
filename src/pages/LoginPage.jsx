@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { setAuth } from '../App';
+import { api } from '../api';
 
 /* ─── Mock credentials ─────────────────────────────────── */
 const USERS = [
@@ -70,21 +71,42 @@ export default function LoginPage({ onLogin }) {
     setError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setTimeout(() => {
-      const user = USERS.find(u => u.email === email.trim() && u.password === password);
-      if (user) {
-        setAuth(user);
-        onLogin();
-        navigate(`/${user.role}`);
+    
+    try {
+      const response = await api.login(email.trim(), password);
+      setAuth({ ...response.user, token: response.token });
+      onLogin();
+      navigate(`/${response.user.role.toLowerCase()}`);
+    } catch (err) {
+      // For the hackathon MVP, if login fails (because the DB isn't seeded), let's auto-register them
+      // as a fallback if they are using one of the demo emails
+      const demoUser = USERS.find(u => u.email === email.trim() && u.password === password);
+      if (demoUser) {
+        try {
+          const regRes = await api.register({
+            email: demoUser.email,
+            password: demoUser.password,
+            name: demoUser.name,
+            role: demoUser.role.toUpperCase()
+          });
+          // Now login again
+          const loginRes = await api.login(email.trim(), password);
+          setAuth({ ...loginRes.user, token: loginRes.token });
+          onLogin();
+          navigate(`/${loginRes.user.role.toLowerCase()}`);
+        } catch (regErr) {
+          setError(err.message || 'Invalid email or password.');
+        }
       } else {
-        setError('Invalid email or password. Try one of the demo credentials below.');
-        setLoading(false);
+        setError(err.message || 'Invalid email or password.');
       }
-    }, 700);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

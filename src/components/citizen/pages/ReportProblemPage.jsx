@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { MapPin, Camera, Send, Upload, X, Check, ChevronRight, ChevronLeft } from 'lucide-react';
 import { PROBLEM_TYPES } from '../../../data/mockData';
+import { api } from '../../../api';
 
 // Step indicator
 function StepBar({ current, total }) {
@@ -230,6 +231,8 @@ export default function ReportProblemPage({ onNavChange }) {
   const [additionalNotes, setNotes]   = useState('');
   const [complaintId, setComplaintId] = useState('');
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleImages = (e) => {
     const files = Array.from(e.target.files);
     files.forEach(f => {
@@ -239,10 +242,31 @@ export default function ReportProblemPage({ onNavChange }) {
     });
   };
 
-  const handleSubmit = () => {
-    const id = `RW-${String(Math.floor(Math.random()*900+100)).padStart(5,'0')}`;
-    setComplaintId(id);
-    setStep(6);
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      // Find problem type label
+      const pt = PROBLEM_TYPES.find(p=>p.id===problemType);
+      
+      const payload = {
+        title: pt ? pt.label : 'Road Issue',
+        description: description || additionalNotes,
+        latitude: location?.lat || 26.912,
+        longitude: location?.lng || 75.790,
+        address: location?.address || 'Unknown Location',
+        damageType: problemType,
+        severity: 0.9, // HARDCODED for MVP based on AI analysis
+        authorityId: null // backend handles assignment
+      };
+      
+      const res = await api.submitComplaint(payload);
+      setComplaintId(res.ticketNumber || res.id);
+      setStep(6);
+    } catch (err) {
+      alert('Failed to submit complaint: ' + err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const canNext = () => {

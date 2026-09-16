@@ -103,11 +103,24 @@ const FILTERS = [
   { key:'breached', label:'SLA Breached' },
 ];
 
+import { useEffect } from 'react';
+import { api } from '../../../api';
+
 export default function MyComplaintsPage() {
-  const all = getMyComplaints();
+  const [all, setAll] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter]   = useState('all');
   const [search, setSearch]   = useState('');
   const [selected, setSelected] = useState(null);
+
+  useEffect(() => {
+    api.getMyComplaints()
+      .then(data => setAll(data))
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div style={{padding:40,textAlign:'center'}}>Loading complaints...</div>;
 
   const filtered = all.filter(c => {
     if (filter==='breached') return c.slaLeft===0 || c.status==='escalated';

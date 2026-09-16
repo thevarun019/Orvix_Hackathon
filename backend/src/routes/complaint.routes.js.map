@@ -1,0 +1,1 @@
+{"version":3,"file":"complaint.routes.js","sourceRoot":"","sources":["complaint.routes.ts"],"names":[],"mappings":";;AAAA,qCAAiC;AACjC,8EAAuF;AACvF,6CAAiD;AAEjD,MAAM,MAAM,GAAG,IAAA,gBAAM,GAAE,CAAC;AAExB,MAAM,CAAC,GAAG,CAAC,kBAAW,CAAC,CAAC;AAExB,MAAM,CAAC,IAAI,CAAC,GAAG,EAAE,sCAAe,CAAC,CAAC;AAClC,MAAM,CAAC,GAAG,CAAC,KAAK,EAAE,sCAAe,CAAC,CAAC;AAEnC,kBAAe,MAAM,CAAC"}

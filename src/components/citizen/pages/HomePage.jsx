@@ -34,7 +34,7 @@ function MiniMapWidget({ complaints }) {
       if (mapRef.current._leaflet_id) {
         mapRef.current._leaflet_id = null;
       }
-      const map = L.map(mapRef.current, { center:[26.9,75.79], zoom:11, zoomControl:false, attributionControl:false });
+      const map = L.map(mapRef.current, { center:[26.9,75.79], zoom:11, zoomControl:false, attributionControl:false, scrollWheelZoom: false });
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
       complaints.filter(c=>c.lat).forEach(c => {
         const col = {critical:'#ef4444',high:'#f97316',medium:'#f59e0b',low:'#10b981',resolved:'#10b981'}[c.status==='resolved'?'resolved':c.severity]||'#3b82f6';
@@ -179,11 +179,24 @@ function ComplaintDetailModal({ complaint, onClose }) {
   );
 }
 
+import { api } from '../../../api';
+
 export default function HomePage({ onNavChange }) {
-  const complaints = getMyComplaints();
+  const [complaints, setComplaints] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
+
+  useEffect(() => {
+    api.getMyComplaints()
+      .then(data => setComplaints(data))
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
+
   const activeComplaint = complaints.find(c=>c.status==='progress'&&c.slaLeft!=null);
   const escalated       = complaints.filter(c=>c.status==='escalated'||c.slaLeft===0);
+
+  if (loading) return <div style={{padding:40,textAlign:'center'}}>Loading dashboard...</div>;
 
   return (
     <div>

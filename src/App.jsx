@@ -12,10 +12,11 @@ export const getAuth = () => {
     if (!raw) return null;
     const data = JSON.parse(raw);
     // Validate it has required fields
-    if (!data?.role || !['citizen','authority','state'].includes(data.role)) {
+    if (!data?.role || !['citizen','authority','state'].includes(data.role.toLowerCase())) {
       localStorage.removeItem('rw_auth');
       return null;
     }
+    data.role = data.role.toLowerCase();
     return data;
   } catch { 
     localStorage.removeItem('rw_auth');
