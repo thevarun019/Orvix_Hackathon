@@ -1,18 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Filter, MessageSquare, ArrowRight, CheckCircle, AlertTriangle } from 'lucide-react';
-import { COMPLAINTS, severityLabel, statusLabel, typeIcon } from '../../../data/mockData';
+import { severityLabel, statusLabel, typeIcon } from '../../../data/mockData';
+import { api } from '../../../api';
 
 export default function ComplaintQueuePage() {
   const [filterSeverity, setFilterSeverity] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
   const [search, setSearch] = useState('');
+  
+  const [allComplaints, setAllComplaints] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filtered = COMPLAINTS.filter(c => {
+  useEffect(() => {
+    api.getAuthorityComplaints()
+      .then(data => setAllComplaints(data))
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const filtered = allComplaints.filter(c => {
     if (filterSeverity !== 'all' && c.severity !== filterSeverity) return false;
     if (filterStatus !== 'all' && c.status !== filterStatus) return false;
     if (search && !c.id.toLowerCase().includes(search.toLowerCase()) && !c.location.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
+
+  if (loading) return <div style={{padding:40, textAlign:'center'}}>Loading queue...</div>;
 
   const getSeverityBadge = (severity) => {
     const cls = { critical: 'critical', high: 'high', medium: 'medium', low: 'low' }[severity] || 'medium';

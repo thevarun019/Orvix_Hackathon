@@ -1,10 +1,17 @@
-import { useState } from 'react';
-import { WORKERS, COMPLAINTS, typeIcon, severityLabel } from '../../../data/mockData';
+import { useState, useEffect } from 'react';
+import { WORKERS, typeIcon, severityLabel } from '../../../data/mockData';
 import { MapPin, Briefcase, Clock, ChevronRight } from 'lucide-react';
+import { api } from '../../../api';
 
 export default function AssignmentsPage() {
   const [selectedWorker, setSelectedWorker] = useState(WORKERS[0]);
-  const unassigned = COMPLAINTS.filter(c => !c.assignedTo && c.status === 'pending');
+  const [allComplaints, setAllComplaints] = useState([]);
+  
+  useEffect(() => {
+    api.getAuthorityComplaints().then(setAllComplaints).catch(console.error);
+  }, []);
+
+  const unassigned = allComplaints.filter(c => !c.assignedTo && c.status === 'pending');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24, height: '100%' }}>

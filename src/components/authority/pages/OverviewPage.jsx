@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { AlertTriangle, TrendingUp, CheckCircle, Clock, MapPin, Search } from 'lucide-react';
-import { COMPLAINTS, AUTHORITY_KPIs, RECENT_ACTIVITY, severityLabel, statusLabel, typeIcon, slaLabel } from '../../../data/mockData';
+import { AUTHORITY_KPIs, RECENT_ACTIVITY, severityLabel, statusLabel, typeIcon, slaLabel } from '../../../data/mockData';
+import { api } from '../../../api';
 
 function AuthorityMap({ complaints }) {
   const mapRef = useRef(null);
@@ -58,8 +59,22 @@ function AuthorityMap({ complaints }) {
 }
 
 export default function OverviewPage({ onNavChange }) {
-  const activeComplaints = COMPLAINTS.filter(c => c.status !== 'resolved');
-  const critical = COMPLAINTS.filter(c => c.severity === 'critical' && c.status !== 'resolved');
+  const [activeComplaints, setActiveComplaints] = useState([]);
+  const [critical, setCritical] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.getAuthorityComplaints()
+      .then(data => {
+        const active = data.filter(c => c.status !== 'resolved');
+        setActiveComplaints(active);
+        setCritical(data.filter(c => c.severity === 'critical' && c.status !== 'resolved'));
+      })
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div style={{padding:40, textAlign:'center'}}>Loading dashboard...</div>;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
